@@ -23,14 +23,16 @@ final class RootTabBarController: UITabBarController {
             trackersNav.tabBarItem = UITabBarItem(
                 title: "Трекеры",
                 image: UIImage(resource: .trackers),
-                selectedImage: nil
+                selectedImage: nil,
             )
-          
+
             statisticsVC.tabBarItem = UITabBarItem(
                 title: "Статистика",
                 image: UIImage(resource: .stats),
                 selectedImage: nil
             )
+            
+            tabBar.tintColor = .trackerBlue
 
             viewControllers = [trackersNav, statisticsVC]
         }
