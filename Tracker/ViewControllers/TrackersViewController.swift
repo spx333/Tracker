@@ -18,6 +18,12 @@ final class TrackersViewController: UIViewController {
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.placeholder = "Поиск"
         searchBar.searchBarStyle = .minimal
+        
+        if #available(iOS 13.0, *) {
+            searchBar.searchTextField.backgroundColor = .trackerBackground
+            searchBar.searchTextField.clipsToBounds = true
+        }
+        
         return searchBar
     }()
     
@@ -70,11 +76,7 @@ final class TrackersViewController: UIViewController {
                 tracker.schedule.contains(selectedWeekday)
             }
             
-            if filteredTrackers.isEmpty {
-                return nil
-            } else {
-                return TrackerCategory(title: category.title, trackers: filteredTrackers)
-            }
+            return filteredTrackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: filteredTrackers)
         }
     }
     
@@ -83,6 +85,8 @@ final class TrackersViewController: UIViewController {
         
         setupUI()
         setupNavigationBar()
+        
+        updateVisibleState()
     }
     
     private func setupUI() {
@@ -94,6 +98,12 @@ final class TrackersViewController: UIViewController {
         view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
+            
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -102,12 +112,9 @@ final class TrackersViewController: UIViewController {
             placeholderImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
             
             placeholderLabel.topAnchor.constraint(equalTo: placeholderImageView.bottomAnchor, constant: 8),
-            placeholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
             
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+
         ])
 
         collectionView.dataSource = self
