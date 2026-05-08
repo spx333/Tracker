@@ -90,6 +90,10 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         setupUI()
         setupActions()
         updateCreateButtonState()
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
 
     private func setupNavigationBar() {
@@ -224,6 +228,10 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         let textCount = nameTextField.text?.count ?? 0
         errorLabel.isHidden = textCount <= 38
         updateCreateButtonState()
+    }
+    
+    @objc private func hideKeyboard() {
+        view.endEditing(true)
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

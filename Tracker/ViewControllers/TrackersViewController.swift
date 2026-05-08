@@ -87,6 +87,10 @@ final class TrackersViewController: UIViewController {
         setupNavigationBar()
         
         updateVisibleState()
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
     
     private func setupUI() {
@@ -202,10 +206,13 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func dateChanged() {
-        
         currentDate = datePicker.date
         collectionView.reloadData()
         updateVisibleState()
+    }
+    
+    @objc private func hideKeyboard() {
+        view.endEditing(true)
     }
     
     func addTracker(_ tracker: Tracker, to categoryTitle: String) {
