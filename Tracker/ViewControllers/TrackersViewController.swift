@@ -57,6 +57,7 @@ final class TrackersViewController: UIViewController {
         picker.datePickerMode = .date
         picker.preferredDatePickerStyle = .compact
         picker.locale = Locale(identifier: "ru_RU")
+        picker.tintColor = .trackerBlue
         return picker
     }()
     
@@ -88,9 +89,7 @@ final class TrackersViewController: UIViewController {
         
         updateVisibleState()
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
+        setupTapToDismissKeyboard()
     }
     
     private func setupUI() {
@@ -209,10 +208,6 @@ final class TrackersViewController: UIViewController {
         currentDate = datePicker.date
         collectionView.reloadData()
         updateVisibleState()
-    }
-    
-    @objc private func hideKeyboard() {
-        view.endEditing(true)
     }
     
     func addTracker(_ tracker: Tracker, to categoryTitle: String) {
