@@ -9,6 +9,10 @@ import UIKit
 
 final class TrackersViewController: UIViewController {
     
+    private let trackerStore: TrackerStore
+    private let trackerCategoryStore: TrackerCategoryStore
+    private let trackerRecordStore: TrackerRecordStore
+    
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
     private var currentDate: Date = Date()
@@ -81,15 +85,42 @@ final class TrackersViewController: UIViewController {
         }
     }
     
+    init(
+        trackerStore: TrackerStore,
+        trackerCategoryStore: TrackerCategoryStore,
+        trackerRecordStore: TrackerRecordStore
+    ) {
+        self.trackerStore = trackerStore
+        self.trackerCategoryStore = trackerCategoryStore
+        self.trackerRecordStore = trackerRecordStore
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        nil
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        trackerStore.delegate = self
+        trackerCategoryStore.delegate = self
+        trackerRecordStore.delegate = self
         
         setupUI()
         setupNavigationBar()
         
-        updateVisibleState()
-        
         setupTapToDismissKeyboard()
+        
+        loadData()
+    }
+    
+    private func loadData() {
+        categories = trackerCategoryStore.fetchCategories()
+        completedTrackers = trackerRecordStore.fetchRecords()
+        collectionView.reloadData()
+        updateVisibleState()
     }
     
     private func setupUI() {
@@ -282,5 +313,23 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         16
+    }
+}
+
+extension TrackersViewController: TrackerStoreDelegate {
+    func storeDidUpdateTrackers() {
+        loadData()
+    }
+}
+
+extension TrackersViewController: TrackerCategoryStoreDelegate {
+    func storeDidUpdateCategories() {
+        loadData()
+    }
+}
+
+extension TrackersViewController: TrackerRecordStoreDelegate {
+    func storeDidUpdateRecords() {
+        loadData()
     }
 }
