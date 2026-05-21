@@ -17,7 +17,7 @@ final class CoreDataStack {
     init() {
         DaysValueTransformer.register()
 
-        persistentContainer = NSPersistentContainer(name: "Tracker")
+        persistentContainer = NSPersistentContainer(name: "TrackerModel")
         persistentContainer.loadPersistentStores { _, error in
             if let error {
                 assertionFailure("Failed to load persistent stores: \(error)")
