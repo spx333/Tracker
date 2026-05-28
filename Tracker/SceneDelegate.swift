@@ -7,14 +7,14 @@
 
 import UIKit
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+private enum UserDefaultsKeys {
+    static let hasSeenOnboarding = "hasSeenOnboarding"
+}
 
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
     var window: UIWindow?
     
-    private var trackerStore: TrackerStore?
-    private var trackerCategoryStore: TrackerCategoryStore?
-    private var trackerRecordStore: TrackerRecordStore?
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard
             let windowScene = scene as? UIWindowScene,
@@ -29,19 +29,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let trackerCategoryStore = TrackerCategoryStore(context: context)
         let trackerRecordStore = TrackerRecordStore(context: context)
         
-        self.trackerStore = trackerStore
-        self.trackerCategoryStore = trackerCategoryStore
-        self.trackerRecordStore = trackerRecordStore
-        
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = RootTabBarController(
-            trackerStore: trackerStore,
-            trackerCategoryStore: trackerCategoryStore,
-            trackerRecordStore: trackerRecordStore
-        )
+        
+        let hasSeenOnboarding = UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSeenOnboarding)
+        
+        if hasSeenOnboarding {
+            window.rootViewController = RootTabBarController(
+                trackerStore: trackerStore,
+                trackerCategoryStore: trackerCategoryStore,
+                trackerRecordStore: trackerRecordStore
+            )
+        } else {
+            let onboardingViewController = OnboardingViewController()
+            
+            onboardingViewController.onFinish = {
+                UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSeenOnboarding)
+                window.rootViewController = RootTabBarController(
+                    trackerStore: trackerStore,
+                    trackerCategoryStore: trackerCategoryStore,
+                    trackerRecordStore: trackerRecordStore
+                )
+            }
+            
+            window.rootViewController = onboardingViewController
+        }
+        
         self.window = window
         window.makeKeyAndVisible()
-
+        
     }
 }
 
