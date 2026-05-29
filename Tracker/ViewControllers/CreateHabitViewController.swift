@@ -16,7 +16,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
     var onCreate: ((Tracker, String) -> Void)?
 
     private var optionsTopConstraint: NSLayoutConstraint?
-    private var selectedCategoryTitle: String = "Важное"
+    private var selectedCategoryTitle: String?
     private var selectedSchedule: [Weekday] = []
     private let emojis = MockData.emojis
     private let colors = MockData.colors
@@ -127,20 +127,22 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
+
         setupUI()
         setupActions()
         
+        updateCategoryButtonTitle()
         updateScheduleButtonTitle()
         updateCreateButtonState()
         updateErrorState(showError: false)
         
         setupTapToDismissKeyboard()
     }
-
-    private func setupNavigationBar() {
-        navigationController?.navigationBar.isHidden = true
-    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+         super.viewWillAppear(animated)
+         navigationController?.setNavigationBarHidden(true, animated: animated)
+     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
@@ -261,12 +263,31 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func categoryTapped() {
-        print("Переход к категориям пока не реализован")
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let context = appDelegate.coreDataStack.context
+        let categoryStore = TrackerCategoryStore(context: context)
+        let viewModel = CategoriesViewModel(
+            categoryStore: categoryStore,
+            selectedCategoryTitle: selectedCategoryTitle
+        )
+        let categoriesViewController = CategoriesViewController(viewModel: viewModel)
+        
+        categoriesViewController.onCategorySelected = { [weak self] selectedTitle in
+            self?.selectedCategoryTitle = selectedTitle
+            self?.updateCategoryButtonTitle()
+            self?.updateCreateButtonState()
+        }
+        
+        navigationController?.pushViewController(categoriesViewController, animated: true)
     }
 
     @objc private func createTapped() {
         guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
               !name.isEmpty,
+              let selectedCategoryTitle,
               !selectedSchedule.isEmpty,
               let selectedEmojiIndexPath,
               let selectedColorIndexPath else { return }
@@ -313,11 +334,12 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private func updateCreateButtonState() {
         let hasName = !(nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let hasCategory = !(selectedCategoryTitle?.isEmpty ?? true)
         let hasSchedule = !selectedSchedule.isEmpty
         let hasEmoji = selectedEmojiIndexPath != nil
         let hasColor = selectedColorIndexPath != nil
         
-        let isEnabled = hasName && hasSchedule && hasEmoji && hasColor
+        let isEnabled = hasName && hasCategory && hasSchedule && hasEmoji && hasColor
         
         createButton.isEnabled = isEnabled
         createButton.backgroundColor = isEnabled ? .black : .systemGray3
@@ -364,6 +386,35 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         scheduleButton.setAttributedTitle(title, for: .normal)
         scheduleButton.titleLabel?.numberOfLines = 2
     }
+    
+    private func updateCategoryButtonTitle() {
+         let paragraphStyle = NSMutableParagraphStyle()
+         paragraphStyle.lineSpacing = 2
+         
+         let title = NSMutableAttributedString(
+             string: "Категория",
+             attributes: [
+                 .font: UIFont.systemFont(ofSize: 17, weight: .regular),
+                 .foregroundColor: UIColor.label,
+                 .paragraphStyle: paragraphStyle
+             ]
+         )
+         
+         if let selectedCategoryTitle, !selectedCategoryTitle.isEmpty {
+             let subtitle = NSAttributedString(
+                 string: "\n\(selectedCategoryTitle)",
+                 attributes: [
+                     .font: UIFont.systemFont(ofSize: 17, weight: .regular),
+                     .foregroundColor: UIColor.systemGray,
+                     .paragraphStyle: paragraphStyle
+                 ]
+             )
+             title.append(subtitle)
+         }
+         
+         categoryButton.setAttributedTitle(title, for: .normal)
+         categoryButton.titleLabel?.numberOfLines = 2
+     }
 }
 
 extension CreateHabitViewController: UICollectionViewDataSource {
