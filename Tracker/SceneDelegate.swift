@@ -7,10 +7,6 @@
 
 import UIKit
 
-private enum UserDefaultsKeys {
-    static let hasSeenOnboarding = "hasSeenOnboarding"
-}
-
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
@@ -31,7 +27,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
-        let hasSeenOnboarding = UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSeenOnboarding)
+        let hasSeenOnboarding = UserDefaultsService.shared.hasSeenOnboarding
         
         if hasSeenOnboarding {
             window.rootViewController = RootTabBarController(
@@ -43,7 +39,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let onboardingViewController = OnboardingViewController()
             
             onboardingViewController.onFinish = {
-                UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSeenOnboarding)
+                UserDefaultsService.shared.hasSeenOnboarding = true
                 window.rootViewController = RootTabBarController(
                     trackerStore: trackerStore,
                     trackerCategoryStore: trackerCategoryStore,

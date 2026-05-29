@@ -11,6 +11,10 @@ final class CategoryTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "CategoryTableViewCell"
     
+    private enum Constants {
+        static let checkmarkSystemImageName = "checkmark"
+    }
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .regular)
@@ -21,7 +25,7 @@ final class CategoryTableViewCell: UITableViewCell {
     
     private let checkmarkImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "checkmark")
+        imageView.image = UIImage(systemName: Constants.checkmarkSystemImageName)
         imageView.tintColor = .systemBlue
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.isHidden = true
