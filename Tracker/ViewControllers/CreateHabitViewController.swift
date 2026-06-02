@@ -41,6 +41,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 1))
         textField.leftViewMode = .always
+        textField.clearButtonMode = .whileEditing 
         return textField
     }()
 
