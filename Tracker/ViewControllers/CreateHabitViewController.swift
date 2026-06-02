@@ -227,17 +227,19 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            cancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            cancelButton.trailingAnchor.constraint(equalTo: createButton.leadingAnchor, constant: -8),
+
             cancelButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 16),
             cancelButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            cancelButton.heightAnchor.constraint(equalToConstant: 60),
-            cancelButton.widthAnchor.constraint(equalToConstant: 166),
-            
-            createButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             createButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 16),
             createButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+
+            cancelButton.widthAnchor.constraint(equalToConstant: 166),
+            cancelButton.heightAnchor.constraint(equalToConstant: 60),
+            createButton.widthAnchor.constraint(equalToConstant: 166),
             createButton.heightAnchor.constraint(equalToConstant: 60),
-            createButton.widthAnchor.constraint(equalToConstant: 166)
+
+            cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -87)
         ])
     }
 
