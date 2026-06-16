@@ -18,6 +18,8 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private let trackerToEdit: Tracker?
     private let editingCategoryTitle: String?
+    
+    private let completedDaysCount: Int?
 
     private var optionsTopConstraint: NSLayoutConstraint?
     private var selectedCategoryTitle: String?
@@ -47,6 +49,16 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         textField.leftViewMode = .always
         textField.clearButtonMode = .whileEditing 
         return textField
+    }()
+    
+    private lazy var daysCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
     }()
 
     private let optionsContainerView: UIView = {
@@ -132,10 +144,12 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     init(
         trackerToEdit: Tracker? = nil,
-        categoryTitle: String? = nil
+        categoryTitle: String? = nil,
+        completedDaysCount: Int? = nil
     ) {
         self.trackerToEdit = trackerToEdit
         self.editingCategoryTitle = categoryTitle
+        self.completedDaysCount = completedDaysCount
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -187,6 +201,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         
         view.addSubview(titleLabel)
         view.addSubview(nameTextField)
+        view.addSubview(daysCountLabel)
         view.addSubview(errorLabel)
         view.addSubview(optionsContainerView)
         view.addSubview(collectionView)
@@ -205,7 +220,10 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            nameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
+            daysCountLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
+            daysCountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            nameTextField.topAnchor.constraint(equalTo: daysCountLabel.bottomAnchor, constant: 40),
             nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
@@ -291,11 +309,34 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
         titleLabel.text = NSLocalizedString("edit_tracker_title", comment: "Edit tracker title")
         createButton.setTitle(NSLocalizedString("save_button", comment: "Save button title"), for: .normal)
+        
+        if let completedDaysCount {
+            daysCountLabel.isHidden = false
+            daysCountLabel.text = daysCountString(for: completedDaysCount)
+        }
 
         updateCategoryButtonTitle()
         updateScheduleButtonTitle()
         updateCreateButtonState()
         collectionView.reloadData()
+    }
+    
+    private func daysCountString(for count: Int) -> String {
+        let remainder10 = count % 10
+        let remainder100 = count % 100
+
+        let word: String
+        if remainder100 >= 11 && remainder100 <= 14 {
+            word = "дней"
+        } else if remainder10 == 1 {
+            word = "день"
+        } else if remainder10 >= 2 && remainder10 <= 4 {
+            word = "дня"
+        } else {
+            word = "дней"
+        }
+
+        return "\(count) \(word)"
     }
     
     private func updateErrorState(showError: Bool) {

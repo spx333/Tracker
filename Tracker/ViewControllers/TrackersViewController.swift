@@ -267,9 +267,12 @@ final class TrackersViewController: UIViewController {
     }
     
     private func editTracker(_ tracker: Tracker, categoryTitle: String) {
+        let completedDaysCount = completedTrackers.filter { $0.trackerID == tracker.id }.count
+        
         let editViewController = CreateHabitViewController(
             trackerToEdit: tracker,
-            categoryTitle: categoryTitle
+            categoryTitle: categoryTitle,
+            completedDaysCount: completedDaysCount
         )
 
         editViewController.onUpdate = { [weak self] updatedTracker, updatedCategoryTitle in
