@@ -51,3 +51,9 @@
 "weekday_short_friday" = "Пт";
 "weekday_short_saturday" = "Сб";
 "weekday_short_sunday" = "Вс";
+
+"edit_action" = "Редактировать";
+"delete_action" = "Удалить";
+"edit_tracker_title" = "Редактирование привычки";
+"save_button" = "Сохранить";
+"delete_tracker_confirmation" = "Уверены что хотите удалить трекер?";

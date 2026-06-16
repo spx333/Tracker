@@ -258,9 +258,151 @@ final class TrackersViewController: UIViewController {
         present(navigationController, animated: true)
     }
     
+    private func deleteTracker(_ tracker: Tracker) {
+        do {
+            try trackerStore.deleteTracker(with: tracker.id)
+        } catch {
+            print("Failed to delete tracker: \(error)")
+        }
+    }
+    
+    private func editTracker(_ tracker: Tracker, categoryTitle: String) {
+        let editViewController = CreateHabitViewController(
+            trackerToEdit: tracker,
+            categoryTitle: categoryTitle
+        )
+
+        editViewController.onUpdate = { [weak self] updatedTracker, updatedCategoryTitle in
+            guard let self else { return }
+
+            do {
+                try self.trackerStore.updateTracker(
+                    with: tracker.id,
+                    newTracker: updatedTracker,
+                    categoryTitle: updatedCategoryTitle
+                )
+            } catch {
+                print("Failed to update tracker: \(error)")
+            }
+        }
+
+        let navigationController = UINavigationController(rootViewController: editViewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true)
+    }
+    
+    private func presentDeleteConfirmation(for tracker: Tracker) {
+        let alert = UIAlertController(
+            title: nil,
+            message: NSLocalizedString("delete_tracker_confirmation", comment: "Delete tracker confirmation message"),
+            preferredStyle: .actionSheet
+        )
+
+        let deleteAction = UIAlertAction(
+            title: NSLocalizedString("delete_action", comment: "Delete action title"),
+            style: .destructive
+        ) { [weak self] _ in
+            self?.deleteTracker(tracker)
+        }
+
+        let cancelAction = UIAlertAction(
+            title: NSLocalizedString("cancel_button", comment: "Cancel button title"),
+            style: .cancel
+        )
+
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(
+                x: view.bounds.midX,
+                y: view.bounds.midY,
+                width: 0,
+                height: 0
+            )
+            popover.permittedArrowDirections = []
+        }
+
+        present(alert, animated: true)
+    }
+    
     @objc private func dateChanged() {
         currentDate = datePicker.date
         applyFilters()
+    }
+}
+
+extension TrackersViewController: UICollectionViewDelegate {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        contextMenuConfigurationForItemAt indexPath: IndexPath,
+        point: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
+        let categoryTitle = visibleCategories[indexPath.section].title
+
+        return UIContextMenuConfiguration(
+            identifier: indexPath as NSIndexPath,
+            previewProvider: nil
+        ) { [weak self] _ in
+            guard let self else { return UIMenu() }
+
+            let editAction = UIAction(
+                title: NSLocalizedString("edit_action", comment: "Edit action title")
+            ) { _ in
+                self.editTracker(tracker, categoryTitle: categoryTitle)
+            }
+
+            let deleteAction = UIAction(
+                title: NSLocalizedString("delete_action", comment: "Delete action title"),
+                attributes: .destructive
+            ) { [weak self] _ in
+                self?.presentDeleteConfirmation(for: tracker)
+            }
+
+            return UIMenu(title: "", children: [editAction, deleteAction])
+        }
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
+        makeContextMenuPreview(from: collectionView, configuration: configuration)
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
+        makeContextMenuPreview(from: collectionView, configuration: configuration)
+    }
+
+    private func makeContextMenuPreview(
+        from collectionView: UICollectionView,
+        configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
+        guard
+            let identifier = configuration.identifier as? NSIndexPath,
+            let cell = collectionView.cellForItem(at: identifier as IndexPath) as? TrackerCell
+        else {
+            return nil
+        }
+
+        let previewView = cell.contextMenuPreviewView
+
+        let parameters = UIPreviewParameters()
+        parameters.backgroundColor = .clear
+        parameters.visiblePath = UIBezierPath(
+            roundedRect: previewView.bounds,
+            cornerRadius: 16
+        )
+
+        return UITargetedPreview(
+            view: previewView,
+            parameters: parameters
+        )
     }
 }
 

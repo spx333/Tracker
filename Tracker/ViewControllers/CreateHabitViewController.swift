@@ -14,6 +14,10 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
     }
 
     var onCreate: ((Tracker, String) -> Void)?
+    var onUpdate: ((Tracker, String) -> Void)?
+
+    private let trackerToEdit: Tracker?
+    private let editingCategoryTitle: String?
 
     private var optionsTopConstraint: NSLayoutConstraint?
     private var selectedCategoryTitle: String?
@@ -126,11 +130,25 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         return collectionView
     }()
 
+    init(
+        trackerToEdit: Tracker? = nil,
+        categoryTitle: String? = nil
+    ) {
+        self.trackerToEdit = trackerToEdit
+        self.editingCategoryTitle = categoryTitle
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupUI()
         setupActions()
+        configureInitialDataIfNeeded()
         
         updateCategoryButtonTitle()
         updateScheduleButtonTitle()
@@ -242,6 +260,10 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
             cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -87)
         ])
     }
+    
+    private var isEditingTracker: Bool {
+         trackerToEdit != nil
+     }
 
     private func setupActions() {
         cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
@@ -250,6 +272,30 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         categoryButton.addTarget(self, action: #selector(categoryTapped), for: .touchUpInside)
         nameTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
         nameTextField.delegate = self
+    }
+    
+    private func configureInitialDataIfNeeded() {
+        guard let trackerToEdit else { return }
+
+        nameTextField.text = trackerToEdit.name
+        selectedCategoryTitle = editingCategoryTitle
+        selectedSchedule = trackerToEdit.schedule
+
+        if let emojiIndex = emojis.firstIndex(of: trackerToEdit.emoji) {
+            selectedEmojiIndexPath = IndexPath(item: emojiIndex, section: 0)
+        }
+
+        if let colorIndex = colors.firstIndex(where: { $0.hexString == trackerToEdit.color.hexString }) {
+            selectedColorIndexPath = IndexPath(item: colorIndex, section: 1)
+        }
+
+        titleLabel.text = NSLocalizedString("edit_tracker_title", comment: "Edit tracker title")
+        createButton.setTitle(NSLocalizedString("save_button", comment: "Save button title"), for: .normal)
+
+        updateCategoryButtonTitle()
+        updateScheduleButtonTitle()
+        updateCreateButtonState()
+        collectionView.reloadData()
     }
     
     private func updateErrorState(showError: Bool) {
@@ -288,22 +334,29 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
     }
 
     @objc private func createTapped() {
-        guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !name.isEmpty,
-              let selectedCategoryTitle,
-              !selectedSchedule.isEmpty,
-              let selectedEmojiIndexPath,
-              let selectedColorIndexPath else { return }
+        guard
+            let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+            !name.isEmpty,
+            let categoryTitle = selectedCategoryTitle,
+            let selectedEmojiIndexPath,
+            let selectedColorIndexPath
+        else {
+            return
+        }
 
         let tracker = Tracker(
-            id: UUID(),
+            id: trackerToEdit?.id ?? UUID(),
             name: name,
             color: colors[selectedColorIndexPath.item],
             emoji: emojis[selectedEmojiIndexPath.item],
             schedule: selectedSchedule
         )
 
-        onCreate?(tracker, selectedCategoryTitle)
+        if isEditingTracker {
+             onUpdate?(tracker, categoryTitle)
+         } else {
+             onCreate?(tracker, categoryTitle)
+         }
         dismiss(animated: true)
     }
 

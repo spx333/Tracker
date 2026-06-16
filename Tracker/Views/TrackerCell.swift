@@ -17,6 +17,10 @@ final class TrackerCell: UICollectionViewCell {
     private let countLabel = UILabel()
     private let doneButton = UIButton(type: .system)
     
+    var contextMenuPreviewView: UIView {
+        cardView
+    }
+    
     var onDoneButtonTap: (() -> Void)?
     
     override init(frame: CGRect) {

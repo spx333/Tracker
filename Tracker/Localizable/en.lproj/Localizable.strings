@@ -51,3 +51,9 @@
 "weekday_short_friday" = "Fri";
 "weekday_short_saturday" = "Sat";
 "weekday_short_sunday" = "Sun";
+
+"edit_action" = "Edit";
+"delete_action" = "Delete";
+"edit_tracker_title" = "Edit Habit";
+"save_button" = "Save";
+"delete_tracker_confirmation" = "Are you sure you want to delete this tracker?";

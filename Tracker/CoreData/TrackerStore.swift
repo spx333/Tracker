@@ -70,10 +70,66 @@ final class TrackerStore: NSObject {
             throw error
         }
     }
+    
+    func deleteTracker(with id: UUID) throws {
+        let trackerRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        trackerRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        trackerRequest.fetchLimit = 1
+
+        guard let trackerCoreData = try context.fetch(trackerRequest).first else {
+            return
+        }
+
+        let recordRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        recordRequest.predicate = NSPredicate(format: "tracker.id == %@", id as CVarArg)
+        let records = try context.fetch(recordRequest)
+
+        records.forEach { context.delete($0) }
+        context.delete(trackerCoreData)
+
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            throw error
+        }
+    }
 
     func fetchTrackers() -> [Tracker] {
         let objects = fetchedResultsController.fetchedObjects ?? []
         return objects.compactMap(Self.makeTracker(from:))
+    }
+    
+    func updateTracker(
+        with id: UUID,
+        newTracker: Tracker,
+        categoryTitle: String
+    ) throws {
+        let request: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+
+        let trackers = try context.fetch(request)
+
+        guard let trackerCoreData = trackers.first else { return }
+
+        trackerCoreData.name = newTracker.name
+        trackerCoreData.emoji = newTracker.emoji
+        trackerCoreData.color = newTracker.color.hexString
+        trackerCoreData.setValue(newTracker.schedule, forKey: "schedule")
+
+        let category: TrackerCategoryCoreData
+        if let existingCategory = try categoryStore.findCategory(with: categoryTitle) {
+            category = existingCategory
+        } else {
+            let newCategory = TrackerCategoryCoreData(context: context)
+            newCategory.title = categoryTitle
+            category = newCategory
+        }
+
+        trackerCoreData.category = category
+
+        try context.save()
     }
 
     static func makeTracker(from trackerCoreData: TrackerCoreData) -> Tracker? {
