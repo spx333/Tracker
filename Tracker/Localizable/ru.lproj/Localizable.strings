@@ -57,3 +57,11 @@
 "edit_tracker_title" = "Редактирование привычки";
 "save_button" = "Сохранить";
 "delete_tracker_confirmation" = "Уверены что хотите удалить трекер?";
+
+"filters_button" = "Фильтры";
+"filters_title" = "Фильтры";
+"all_trackers_filter" = "Все трекеры";
+"today_trackers_filter" = "Трекеры на сегодня";
+"completed_filter" = "Завершённые";
+"not_completed_filter" = "Не завершённые";
+"nothing_found_placeholder" = "Ничего не найдено";
