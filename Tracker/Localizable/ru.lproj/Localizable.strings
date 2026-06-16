@@ -1,0 +1,53 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Сергей Петров on 16.06.2026.
+  
+*/
+
+"onboarding_first_title" = "Отслеживайте только\nто, что хотите";
+"onboarding_second_title" = "Даже если это\nне литры воды и йога";
+"onboarding_button" = "Вот это технологии!";
+
+"new_category_title" = "Новая категория";
+"new_category_placeholder" = "Введите название категории";
+"done_button" = "Готово";
+
+"categories_title" = "Категория";
+"categories_placeholder" = "Привычки и события можно\nобъединить по смыслу";
+"add_category_button" = "Добавить категорию";
+
+"create_habit_title" = "Новая привычка";
+"tracker_name_placeholder" = "Введите название трекера";
+"cancel_button" = "Отменить";
+"create_button" = "Создать";
+"tracker_name_limit" = "Ограничение 38 символов";
+"category_title" = "Категория";
+"schedule_title" = "Расписание";
+"every_day" = "Каждый день";
+"emoji_title" = "Emoji";
+"color_title" = "Цвет";
+
+"trackers_title" = "Трекеры";
+"search_placeholder" = "Поиск";
+"trackers_placeholder" = "Что будем отслеживать?";
+
+"schedule_screen_title" = "Расписание";
+"statistics_title" = "Статистика";
+
+"weekday_monday" = "Понедельник";
+"weekday_tuesday" = "Вторник";
+"weekday_wednesday" = "Среда";
+"weekday_thursday" = "Четверг";
+"weekday_friday" = "Пятница";
+"weekday_saturday" = "Суббота";
+"weekday_sunday" = "Воскресенье";
+
+"weekday_short_monday" = "Пн";
+"weekday_short_tuesday" = "Вт";
+"weekday_short_wednesday" = "Ср";
+"weekday_short_thursday" = "Чт";
+"weekday_short_friday" = "Пт";
+"weekday_short_saturday" = "Сб";
+"weekday_short_sunday" = "Вс";

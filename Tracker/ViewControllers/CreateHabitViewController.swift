@@ -26,7 +26,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Новая привычка"
+        label.text = NSLocalizedString("create_habit_title", comment: "Create habit screen title")
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +35,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private lazy var nameTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = NSLocalizedString("tracker_name_placeholder", comment: "Tracker name placeholder")
         textField.backgroundColor = UIColor.secondarySystemBackground
         textField.layer.cornerRadius = 16
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -65,7 +65,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private let cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(NSLocalizedString("cancel_button", comment: "Cancel button title"), for: .normal)
         button.setTitleColor(UIColor(resource: .trackerRed), for: .normal)
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
@@ -76,7 +76,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private let createButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(NSLocalizedString("create_button", comment: "Create button title"), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .systemGray3
         button.layer.cornerRadius = 16
@@ -87,7 +87,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
     
     private let errorLabel: UILabel = {
         let label = UILabel()
-        label.text = "Ограничение 38 символов"
+        label.text = NSLocalizedString("tracker_name_limit", comment: "Tracker name length limit")
         label.font = .systemFont(ofSize: 17, weight: .regular)
         label.textColor = UIColor(resource: .trackerRed)
         label.textAlignment = .center
@@ -151,11 +151,11 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         categoryButton.translatesAutoresizingMaskIntoConstraints = false
         scheduleButton.translatesAutoresizingMaskIntoConstraints = false
         
-        categoryButton.setTitle("Категория", for: .normal)
+        categoryButton.setTitle(NSLocalizedString("category_title", comment: "Category button title"), for: .normal)
         categoryButton.setTitleColor(.label, for: .normal)
         categoryButton.contentHorizontalAlignment = .left
         
-        scheduleButton.setTitle("Расписание", for: .normal)
+        scheduleButton.setTitle(NSLocalizedString("schedule_title", comment: "Schedule button title"), for: .normal)
         scheduleButton.setTitleColor(.label, for: .normal)
         scheduleButton.contentHorizontalAlignment = .left
         
@@ -354,7 +354,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         paragraphStyle.lineSpacing = 2
         
         let title = NSMutableAttributedString(
-            string: "Расписание",
+            string: NSLocalizedString("schedule_title", comment: "Schedule button title"),
             attributes: [
                 .font: UIFont.systemFont(ofSize: 17, weight: .regular),
                 .foregroundColor: UIColor.label,
@@ -366,7 +366,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
             let subtitleText: String
             
             if selectedSchedule.count == Weekday.allCases.count {
-                subtitleText = "Каждый день"
+                subtitleText = NSLocalizedString("every_day", comment: "Every day schedule text")
             } else {
                 subtitleText = selectedSchedule
                     .sorted { $0.rawValue < $1.rawValue }
@@ -395,7 +395,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
          paragraphStyle.lineSpacing = 2
          
          let title = NSMutableAttributedString(
-             string: "Категория",
+            string: NSLocalizedString("category_title", comment: "Category button title"),
              attributes: [
                  .font: UIFont.systemFont(ofSize: 17, weight: .regular),
                  .foregroundColor: UIColor.label,
@@ -476,7 +476,9 @@ extension CreateHabitViewController: UICollectionViewDataSource {
             return UICollectionReusableView()
         }
         
-        header.configure(with: indexPath.section == 0 ? "Emoji" : "Цвет")
+        header.configure(with: indexPath.section == 0
+            ? NSLocalizedString("emoji_title", comment: "Emoji section title")
+            : NSLocalizedString("color_title", comment: "Color section title"))
         return header
     }
 }

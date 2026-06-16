@@ -1,0 +1,53 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Сергей Петров on 16.06.2026.
+  
+*/
+
+"onboarding_first_title" = "Track only what you want";
+"onboarding_second_title" = "Even if it's not liters of water and yoga";
+"onboarding_button" = "Now that's technology!";
+
+"new_category_title" = "New Category";
+"new_category_placeholder" = "Enter category name";
+"done_button" = "Done";
+
+"categories_title" = "Category";
+"categories_placeholder" = "Habits and events can be grouped by meaning";
+"add_category_button" = "Add Category";
+
+"create_habit_title" = "New Habit";
+"tracker_name_placeholder" = "Enter tracker name";
+"cancel_button" = "Cancel";
+"create_button" = "Create";
+"tracker_name_limit" = "38 character limit";
+"category_title" = "Category";
+"schedule_title" = "Schedule";
+"every_day" = "Every day";
+"emoji_title" = "Emoji";
+"color_title" = "Color";
+
+"trackers_title" = "Trackers";
+"search_placeholder" = "Search";
+"trackers_placeholder" = "What shall we track?";
+
+"schedule_screen_title" = "Schedule";
+"statistics_title" = "Statistics";
+
+"weekday_monday" = "Monday";
+"weekday_tuesday" = "Tuesday";
+"weekday_wednesday" = "Wednesday";
+"weekday_thursday" = "Thursday";
+"weekday_friday" = "Friday";
+"weekday_saturday" = "Saturday";
+"weekday_sunday" = "Sunday";
+
+"weekday_short_monday" = "Mon";
+"weekday_short_tuesday" = "Tue";
+"weekday_short_wednesday" = "Wed";
+"weekday_short_thursday" = "Thu";
+"weekday_short_friday" = "Fri";
+"weekday_short_saturday" = "Sat";
+"weekday_short_sunday" = "Sun";
