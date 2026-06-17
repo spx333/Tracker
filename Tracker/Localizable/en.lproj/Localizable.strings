@@ -72,3 +72,5 @@
 "category_delete_not_empty_title" = "This category is not empty";
 "category_delete_not_empty_message" = "Delete its trackers first, then delete the category itself";
 "ok_action" = "OK";
+
+"edit_category_title" = "Edit Category";
