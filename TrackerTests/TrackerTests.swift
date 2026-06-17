@@ -5,15 +5,55 @@
 //  Created by Сергей Петров on 23.04.2026.
 //
 
-import Testing
+import SnapshotTesting
+import XCTest
 @testable import Tracker
 
-struct TrackerTests {
+final class TrackerTests: XCTestCase {
+    
+    override func setUp() {
+            super.setUp()
+            isRecording = false
+        }
+    
+    func testTrackersViewControllerLight() {
+        
+        let coreDataStack = CoreDataStack()
+        let trackerCategoryStore = TrackerCategoryStore(context: coreDataStack.context)
+        let trackerStore = TrackerStore(context: coreDataStack.context)
+        let trackerRecordStore = TrackerRecordStore(context: coreDataStack.context)
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        // Swift Testing Documentation
-        // https://developer.apple.com/documentation/testing
+        let viewController = TrackersViewController(
+            trackerStore: trackerStore,
+            trackerCategoryStore: trackerCategoryStore,
+            trackerRecordStore: trackerRecordStore
+        )
+
+        let navigationController = UINavigationController(rootViewController: viewController)
+
+        assertSnapshot(
+            of: navigationController,
+            as: .image(traits: .init(userInterfaceStyle: .light))
+        )
     }
+    
+    func testTrackersViewControllerDark() {
+        let coreDataStack = CoreDataStack()
+        let trackerCategoryStore = TrackerCategoryStore(context: coreDataStack.context)
+        let trackerStore = TrackerStore(context: coreDataStack.context)
+        let trackerRecordStore = TrackerRecordStore(context: coreDataStack.context)
 
+        let viewController = TrackersViewController(
+            trackerStore: trackerStore,
+            trackerCategoryStore: trackerCategoryStore,
+            trackerRecordStore: trackerRecordStore
+        )
+
+        let navigationController = UINavigationController(rootViewController: viewController)
+
+        assertSnapshot(
+            of: navigationController,
+            as: .image(traits: .init(userInterfaceStyle: .dark))
+        )
+    }
 }
