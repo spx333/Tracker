@@ -45,7 +45,7 @@ final class RootTabBarController: UITabBarController {
             trackerRecordStore: trackerRecordStore
         )
         
-        let statisticsVC = StatisticsViewController()
+        let statisticsVC = StatisticsViewController(trackerRecordStore: trackerRecordStore)
         
         let trackersNav = UINavigationController(rootViewController: trackersVC)
         

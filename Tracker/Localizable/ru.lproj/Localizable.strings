@@ -65,3 +65,13 @@
 "completed_filter" = "Завершённые";
 "not_completed_filter" = "Не завершённые";
 "nothing_found_placeholder" = "Ничего не найдено";
+
+"statistics_empty_placeholder" = "Анализировать пока нечего";
+"statistics_completed_title" = "Трекеров завершено";
+
+"category_delete_not_empty_title" = "Эта категория не пустая";
+"category_delete_not_empty_message" = "Удалите из неё трекеры, чтобы затем удалить саму категорию";
+"ok_action" = "ОК";
+
+"edit_category_title" = "Редактирование категории";
+"done_button" = "Готово";

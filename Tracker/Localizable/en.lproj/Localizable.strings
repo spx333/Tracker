@@ -65,3 +65,10 @@
 "completed_filter" = "Completed";
 "not_completed_filter" = "Not Completed";
 "nothing_found_placeholder" = "Nothing found";
+
+"statistics_empty_placeholder" = "Nothing to analyze yet";
+"statistics_completed_title" = "Trackers completed";
+
+"category_delete_not_empty_title" = "This category is not empty";
+"category_delete_not_empty_message" = "Delete its trackers first, then delete the category itself";
+"ok_action" = "OK";
