@@ -13,6 +13,8 @@ final class TrackersViewController: UIViewController {
     private let trackerCategoryStore: TrackerCategoryStore
     private let trackerRecordStore: TrackerRecordStore
     
+    private let analyticsService: AnalyticsServiceProtocol = AnalyticsService()
+    
     private var visibleCategories: [TrackerCategory] = []
     private var searchText: String = ""
     
@@ -119,6 +121,16 @@ final class TrackersViewController: UIViewController {
         setupTapToDismissKeyboard()
         
         loadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        analyticsService.report(event: .open, screen: .main, item: nil)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        analyticsService.report(event: .close, screen: .main, item: nil)
     }
     
     private func loadData() {
@@ -253,6 +265,8 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func filtersButtonTapped() {
+        analyticsService.report(event: .click, screen: .main, item: .filter)
+        
         let filtersViewController = FiltersViewController(selectedFilter: selectedFilter)
 
         filtersViewController.onFilterSelected = { [weak self] filter in
@@ -329,6 +343,8 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func addTrackerButtonTapped() {
+        analyticsService.report(event: .click, screen: .main, item: .addTrack)
+        
         let createHabitViewController = CreateHabitViewController()
         
         createHabitViewController.onCreate = { [weak self] tracker, categoryTitle in
@@ -442,6 +458,7 @@ extension TrackersViewController: UICollectionViewDelegate {
             let editAction = UIAction(
                 title: NSLocalizedString("edit_action", comment: "Edit action title")
             ) { _ in
+                self.analyticsService.report(event: .click, screen: .main, item: .edit)
                 self.editTracker(tracker, categoryTitle: categoryTitle)
             }
 
@@ -449,6 +466,7 @@ extension TrackersViewController: UICollectionViewDelegate {
                 title: NSLocalizedString("delete_action", comment: "Delete action title"),
                 attributes: .destructive
             ) { [weak self] _ in
+                self?.analyticsService.report(event: .click, screen: .main, item: .delete)
                 self?.presentDeleteConfirmation(for: tracker)
             }
 
@@ -521,6 +539,7 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         cell.configure(with: tracker, completedDays: completedDays, isCompleted: isCompleted)
         cell.onDoneButtonTap = { [weak self] in
+            self?.analyticsService.report(event: .click, screen: .main, item: .track)
             self?.toggleTrackerCompletion(tracker)
         }
         

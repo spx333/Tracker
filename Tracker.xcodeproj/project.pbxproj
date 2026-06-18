@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AFDDB5AE2FE2E305009496FD /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = AFDDB5AD2FE2E305009496FD /* SnapshotTesting */; };
+		AFDDB6372FE3D7A3009496FD /* AppMetricaCore in Frameworks */ = {isa = PBXBuildFile; productRef = AFDDB6362FE3D7A3009496FD /* AppMetricaCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AFDDB6372FE3D7A3009496FD /* AppMetricaCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +140,7 @@
 			);
 			name = Tracker;
 			packageProductDependencies = (
+				AFDDB6362FE3D7A3009496FD /* AppMetricaCore */,
 			);
 			productName = Tracker;
 			productReference = AFB3E60F2F9A638F00FC7BFA /* Tracker.app */;
@@ -225,6 +228,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				AFDDB5AB2FE2E055009496FD /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+				AFDDB6332FE3D6A2009496FD /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AFB3E6102F9A638F00FC7BFA /* Products */;
@@ -627,6 +631,14 @@
 				minimumVersion = 1.19.2;
 			};
 		};
+		AFDDB6332FE3D6A2009496FD /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/appmetrica/appmetrica-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -634,6 +646,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AFDDB5AB2FE2E055009496FD /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
+		};
+		AFDDB6362FE3D7A3009496FD /* AppMetricaCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AFDDB6332FE3D6A2009496FD /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */;
+			productName = AppMetricaCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
