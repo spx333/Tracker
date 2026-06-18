@@ -14,13 +14,13 @@ final class OnboardingViewController: UIPageViewController {
     private let pages: [OnboardingPage] = [
         OnboardingPage(
             backgroundImage: UIImage(resource: .onboardingBlue),
-            title: "Отслеживайте только\nто, что хотите",
-            buttonTitle: "Вот это технологии!"
+            title: NSLocalizedString("onboarding_first_title", comment: "First onboarding screen title"),
+            buttonTitle: NSLocalizedString("onboarding_button", comment: "Onboarding continue button")
         ),
         OnboardingPage(
             backgroundImage: UIImage(resource: .onboardingRed),
-            title: "Даже если это\nне литры воды и йога",
-            buttonTitle: "Вот это технологии!"
+            title: NSLocalizedString("onboarding_second_title", comment: "Second onboarding screen title"),
+            buttonTitle: NSLocalizedString("onboarding_button", comment: "Onboarding continue button")
         )
     ]
     

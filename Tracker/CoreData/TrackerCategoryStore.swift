@@ -66,8 +66,42 @@ final class TrackerCategoryStore: NSObject {
         request.predicate = NSPredicate(format: "title == %@", title)
         request.fetchLimit = 1
 
-        let categories = try context.fetch(request)
-        return categories.first
+        return try context.fetch(request).first
+    }
+
+    func deleteCategory(with title: String) throws {
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", title)
+        request.fetchLimit = 1
+
+        guard let category = try context.fetch(request).first else { return }
+
+        context.delete(category)
+        try context.save()
+    }
+
+    func canDeleteCategory(with title: String) throws -> Bool {
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", title)
+        request.fetchLimit = 1
+
+        guard let category = try context.fetch(request).first else {
+            return false
+        }
+
+        let trackers = category.trackers as? Set<TrackerCoreData> ?? []
+        return trackers.isEmpty
+    }
+    
+    func updateCategoryTitle(from oldTitle: String, to newTitle: String) throws {
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", oldTitle)
+        request.fetchLimit = 1
+
+        guard let category = try context.fetch(request).first else { return }
+
+        category.title = newTitle
+        try context.save()
     }
 }
 

@@ -35,7 +35,7 @@ final class CategoriesViewController: UIViewController {
     
     private let placeholderLabel: UILabel = {
         let label = UILabel()
-        label.text = "Привычки и события можно\nобъединить по смыслу"
+        label.text = NSLocalizedString("categories_placeholder", comment: "Empty categories placeholder")
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .black
         label.numberOfLines = 2
@@ -46,7 +46,7 @@ final class CategoriesViewController: UIViewController {
     
     private let addCategoryButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Добавить категорию", for: .normal)
+        button.setTitle(NSLocalizedString("add_category_button", comment: "Add category button"), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .black
         button.layer.cornerRadius = 16
@@ -68,7 +68,7 @@ final class CategoriesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        title = "Категория"
+        title = NSLocalizedString("categories_title", comment: "Categories screen title")
         
         setupViews()
         setupConstraints()
@@ -159,6 +159,51 @@ final class CategoriesViewController: UIViewController {
         
         navigationController?.pushViewController(newCategoryViewController, animated: true)
     }
+    
+    private func editCategory(_ oldTitle: String) {
+        let viewModel = EditCategoryViewModel(
+            categoryStore: viewModel.categoryStore,
+            oldTitle: oldTitle
+        )
+        let viewController = EditCategoryViewController(viewModel: viewModel)
+
+        viewController.onCategoryUpdated = { [weak self] in
+            self?.viewModel.loadCategories()
+        }
+
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    private func deleteCategory(_ title: String) {
+        do {
+            let canDelete = try viewModel.categoryStore.canDeleteCategory(with: title)
+            
+            if canDelete {
+                try viewModel.categoryStore.deleteCategory(with: title)
+                viewModel.loadCategories()
+            } else {
+                presentCannotDeleteCategoryAlert()
+            }
+        } catch {
+            print("Failed to delete category: \(error)")
+        }
+    }
+    
+    private func presentCannotDeleteCategoryAlert() {
+        let alert = UIAlertController(
+            title: NSLocalizedString("category_delete_not_empty_title", comment: "Non-empty category delete alert title"),
+            message: NSLocalizedString("category_delete_not_empty_message", comment: "Non-empty category delete alert message"),
+            preferredStyle: .alert
+        )
+        
+        let okAction = UIAlertAction(
+            title: NSLocalizedString("ok_action", comment: "OK action title"),
+            style: .default
+        )
+        alert.addAction(okAction)
+        
+        present(alert, animated: true)
+    }
 }
 
 extension CategoriesViewController: UITableViewDataSource, UITableViewDelegate {
@@ -189,5 +234,32 @@ extension CategoriesViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
+    }
+    
+    func tableView(
+        _ tableView: UITableView,
+        contextMenuConfigurationForRowAt indexPath: IndexPath,
+        point: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        let categoryTitle = viewModel.titleForCategory(at: indexPath.row)
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            guard let self else { return UIMenu() }
+            
+            let editAction = UIAction(
+                title: NSLocalizedString("edit_action", comment: "Edit action title")
+            ) { _ in
+                self.editCategory(categoryTitle)
+            }
+            
+            let deleteAction = UIAction(
+                title: NSLocalizedString("delete_action", comment: "Delete action title"),
+                attributes: .destructive
+            ) { _ in
+                self.deleteCategory(categoryTitle)
+            }
+            
+            return UIMenu(title: "", children: [editAction, deleteAction])
+        }
     }
 }

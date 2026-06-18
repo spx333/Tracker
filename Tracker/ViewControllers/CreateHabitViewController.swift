@@ -14,6 +14,12 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
     }
 
     var onCreate: ((Tracker, String) -> Void)?
+    var onUpdate: ((Tracker, String) -> Void)?
+
+    private let trackerToEdit: Tracker?
+    private let editingCategoryTitle: String?
+    
+    private let completedDaysCount: Int?
 
     private var optionsTopConstraint: NSLayoutConstraint?
     private var selectedCategoryTitle: String?
@@ -26,7 +32,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Новая привычка"
+        label.text = NSLocalizedString("create_habit_title", comment: "Create habit screen title")
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +41,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private lazy var nameTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = NSLocalizedString("tracker_name_placeholder", comment: "Tracker name placeholder")
         textField.backgroundColor = UIColor.secondarySystemBackground
         textField.layer.cornerRadius = 16
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -43,6 +49,16 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         textField.leftViewMode = .always
         textField.clearButtonMode = .whileEditing 
         return textField
+    }()
+    
+    private lazy var daysCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
     }()
 
     private let optionsContainerView: UIView = {
@@ -65,7 +81,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private let cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(NSLocalizedString("cancel_button", comment: "Cancel button title"), for: .normal)
         button.setTitleColor(UIColor(resource: .trackerRed), for: .normal)
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
@@ -76,7 +92,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
 
     private let createButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(NSLocalizedString("create_button", comment: "Create button title"), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .systemGray3
         button.layer.cornerRadius = 16
@@ -87,7 +103,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
     
     private let errorLabel: UILabel = {
         let label = UILabel()
-        label.text = "Ограничение 38 символов"
+        label.text = NSLocalizedString("tracker_name_limit", comment: "Tracker name length limit")
         label.font = .systemFont(ofSize: 17, weight: .regular)
         label.textColor = UIColor(resource: .trackerRed)
         label.textAlignment = .center
@@ -126,11 +142,27 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         return collectionView
     }()
 
+    init(
+        trackerToEdit: Tracker? = nil,
+        categoryTitle: String? = nil,
+        completedDaysCount: Int? = nil
+    ) {
+        self.trackerToEdit = trackerToEdit
+        self.editingCategoryTitle = categoryTitle
+        self.completedDaysCount = completedDaysCount
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupUI()
         setupActions()
+        configureInitialDataIfNeeded()
         
         updateCategoryButtonTitle()
         updateScheduleButtonTitle()
@@ -151,11 +183,11 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         categoryButton.translatesAutoresizingMaskIntoConstraints = false
         scheduleButton.translatesAutoresizingMaskIntoConstraints = false
         
-        categoryButton.setTitle("Категория", for: .normal)
+        categoryButton.setTitle(NSLocalizedString("category_title", comment: "Category button title"), for: .normal)
         categoryButton.setTitleColor(.label, for: .normal)
         categoryButton.contentHorizontalAlignment = .left
         
-        scheduleButton.setTitle("Расписание", for: .normal)
+        scheduleButton.setTitle(NSLocalizedString("schedule_title", comment: "Schedule button title"), for: .normal)
         scheduleButton.setTitleColor(.label, for: .normal)
         scheduleButton.contentHorizontalAlignment = .left
         
@@ -169,6 +201,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         
         view.addSubview(titleLabel)
         view.addSubview(nameTextField)
+        view.addSubview(daysCountLabel)
         view.addSubview(errorLabel)
         view.addSubview(optionsContainerView)
         view.addSubview(collectionView)
@@ -187,7 +220,10 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            nameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
+            daysCountLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
+            daysCountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            nameTextField.topAnchor.constraint(equalTo: daysCountLabel.bottomAnchor, constant: 40),
             nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
@@ -242,6 +278,10 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
             cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -87)
         ])
     }
+    
+    private var isEditingTracker: Bool {
+         trackerToEdit != nil
+     }
 
     private func setupActions() {
         cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
@@ -250,6 +290,42 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         categoryButton.addTarget(self, action: #selector(categoryTapped), for: .touchUpInside)
         nameTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
         nameTextField.delegate = self
+    }
+    
+    private func configureInitialDataIfNeeded() {
+        guard let trackerToEdit else { return }
+
+        nameTextField.text = trackerToEdit.name
+        selectedCategoryTitle = editingCategoryTitle
+        selectedSchedule = trackerToEdit.schedule
+
+        if let emojiIndex = emojis.firstIndex(of: trackerToEdit.emoji) {
+            selectedEmojiIndexPath = IndexPath(item: emojiIndex, section: 0)
+        }
+
+        if let colorIndex = colors.firstIndex(where: { $0.hexString == trackerToEdit.color.hexString }) {
+            selectedColorIndexPath = IndexPath(item: colorIndex, section: 1)
+        }
+
+        titleLabel.text = NSLocalizedString("edit_tracker_title", comment: "Edit tracker title")
+        createButton.setTitle(NSLocalizedString("save_button", comment: "Save button title"), for: .normal)
+        
+        if let completedDaysCount {
+            daysCountLabel.isHidden = false
+            daysCountLabel.text = daysCountString(for: completedDaysCount)
+        }
+
+        updateCategoryButtonTitle()
+        updateScheduleButtonTitle()
+        updateCreateButtonState()
+        collectionView.reloadData()
+    }
+    
+    private func daysCountString(for count: Int) -> String {
+        String.localizedStringWithFormat(
+            NSLocalizedString("days_count", comment: "Completed days count"),
+            count
+        )
     }
     
     private func updateErrorState(showError: Bool) {
@@ -288,22 +364,29 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
     }
 
     @objc private func createTapped() {
-        guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !name.isEmpty,
-              let selectedCategoryTitle,
-              !selectedSchedule.isEmpty,
-              let selectedEmojiIndexPath,
-              let selectedColorIndexPath else { return }
+        guard
+            let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+            !name.isEmpty,
+            let categoryTitle = selectedCategoryTitle,
+            let selectedEmojiIndexPath,
+            let selectedColorIndexPath
+        else {
+            return
+        }
 
         let tracker = Tracker(
-            id: UUID(),
+            id: trackerToEdit?.id ?? UUID(),
             name: name,
             color: colors[selectedColorIndexPath.item],
             emoji: emojis[selectedEmojiIndexPath.item],
             schedule: selectedSchedule
         )
 
-        onCreate?(tracker, selectedCategoryTitle)
+        if isEditingTracker {
+             onUpdate?(tracker, categoryTitle)
+         } else {
+             onCreate?(tracker, categoryTitle)
+         }
         dismiss(animated: true)
     }
 
@@ -354,7 +437,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
         paragraphStyle.lineSpacing = 2
         
         let title = NSMutableAttributedString(
-            string: "Расписание",
+            string: NSLocalizedString("schedule_title", comment: "Schedule button title"),
             attributes: [
                 .font: UIFont.systemFont(ofSize: 17, weight: .regular),
                 .foregroundColor: UIColor.label,
@@ -366,7 +449,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
             let subtitleText: String
             
             if selectedSchedule.count == Weekday.allCases.count {
-                subtitleText = "Каждый день"
+                subtitleText = NSLocalizedString("every_day", comment: "Every day schedule text")
             } else {
                 subtitleText = selectedSchedule
                     .sorted { $0.rawValue < $1.rawValue }
@@ -395,7 +478,7 @@ final class CreateHabitViewController: UIViewController, UITextFieldDelegate {
          paragraphStyle.lineSpacing = 2
          
          let title = NSMutableAttributedString(
-             string: "Категория",
+            string: NSLocalizedString("category_title", comment: "Category button title"),
              attributes: [
                  .font: UIFont.systemFont(ofSize: 17, weight: .regular),
                  .foregroundColor: UIColor.label,
@@ -476,7 +559,9 @@ extension CreateHabitViewController: UICollectionViewDataSource {
             return UICollectionReusableView()
         }
         
-        header.configure(with: indexPath.section == 0 ? "Emoji" : "Цвет")
+        header.configure(with: indexPath.section == 0
+            ? NSLocalizedString("emoji_title", comment: "Emoji section title")
+            : NSLocalizedString("color_title", comment: "Color section title"))
         return header
     }
 }

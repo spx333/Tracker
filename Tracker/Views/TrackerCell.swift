@@ -17,6 +17,10 @@ final class TrackerCell: UICollectionViewCell {
     private let countLabel = UILabel()
     private let doneButton = UIButton(type: .system)
     
+    var contextMenuPreviewView: UIView {
+        cardView
+    }
+    
     var onDoneButtonTap: (() -> Void)?
     
     override init(frame: CGRect) {
@@ -109,16 +113,10 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     private func daysString(for count: Int) -> String {
-        let remainder10 = count % 10
-        let remainder100 = count % 100
-        
-        if remainder10 == 1 && remainder100 != 11 {
-            return "\(count) день"
-        } else if (2...4).contains(remainder10) && !(12...14).contains(remainder100) {
-            return "\(count) дня"
-        } else {
-            return "\(count) дней"
-        }
+        String.localizedStringWithFormat(
+             NSLocalizedString("days_count", comment: "Количество дней выполнения трекера"),
+             count
+         )
     }
     
     @objc private func doneButtonTapped() {
