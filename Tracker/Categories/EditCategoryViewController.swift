@@ -51,16 +51,25 @@ final class EditCategoryViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        title = NSLocalizedString("edit_category_title", comment: "Edit category screen title")
+        setupAppearance()
 
         setupViews()
         setupConstraints()
         setupActions()
         bindViewModel()
 
-        textField.text = viewModel.initialTitle()
-        viewModel.updateText(viewModel.initialTitle())
+        configureInitialState()
+    }
+    
+    private func configureInitialState() {
+        let title = viewModel.initialTitle()
+        textField.text = title
+        viewModel.updateText(title)
+    }
+    
+    private func setupAppearance() {
+        view.backgroundColor = .systemBackground
+        title = NSLocalizedString("edit_category_title", comment: "Edit category screen title")
     }
 
     private func setupViews() {
